@@ -6,7 +6,7 @@ from backend.main import app
 
 # Функция для запуска FastAPI
 def run_fastapi():
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
 
 # Функция для запуска Streamlit
 def run_streamlit():
