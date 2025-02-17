@@ -7,3 +7,4 @@ streamlit
 python-multipart
 fastapi
 beautifulsoup4
+plotly
