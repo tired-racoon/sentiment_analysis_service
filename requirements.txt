@@ -1,0 +1,8 @@
+torch
+transformers
+wordcloud
+uvicorn
+streamlit
+python-multipart
+fastapi
+beautifulsoup4
