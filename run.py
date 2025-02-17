@@ -12,7 +12,7 @@ def run_fastapi():
 def run_streamlit():
     # Ждем, пока запустится FastAPI (чтобы избежать ошибок подключения)
     time.sleep(2)  
-    subprocess.run(["streamlit", "run", "frontend/app.py", "--server.port", "8501", "--server.address", "localhost"])
+    subprocess.run(["streamlit", "run", "frontend/app.py", "--server.port", "8888", "--server.address", "localhost"])
 
 # Создаем потоки
 t1 = threading.Thread(target=run_fastapi)
