@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 import pandas as pd
-from model import SentimentAnalyzer
+from backend.model import SentimentAnalyzer
 from fastapi.middleware.cors import CORSMiddleware
 from bs4 import BeautifulSoup
 import time
