@@ -1,5 +1,4 @@
-tensorflow
-tf-keras
+torch==2.0.1
 transformers
 wordcloud
 uvicorn
