@@ -1,4 +1,5 @@
 tensorflow
+tf-keras
 transformers
 wordcloud
 uvicorn
