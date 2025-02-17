@@ -5,7 +5,9 @@ import plotly.express as px
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
+import os
 
+os.system('uvicorn backend.main:app --reload')
 
 
 API_TEXT = "http://127.0.0.1:8000/analyze/"
