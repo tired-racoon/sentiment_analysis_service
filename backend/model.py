@@ -7,3 +7,5 @@ class SentimentAnalyzer:
     def predict(self, text):
         result = self.model(text)[0]
         return result["label"], result["score"]
+
+analyzer = SentimentAnalyzer()
