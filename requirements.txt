@@ -1,6 +1,7 @@
 torch==2.3.1
 httpx
 sentencepiece
+openpyxl
 transformers
 wordcloud
 uvicorn
