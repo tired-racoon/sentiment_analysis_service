@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from bs4 import BeautifulSoup
 from starlette.responses import JSONResponse
 from fastapi.testclient import TestClient
+from backend.model import analyzer
 
 # Запуск FastAPI внутри Streamlit
 app = FastAPI()
@@ -29,15 +30,6 @@ LABEL_MAPPING = {
     "LABEL_2": "good",
 }
 
-class SentimentAnalyzer:
-    def __init__(self):
-        self.model = pipeline(model="sismetanin/xlm_roberta_large-ru-sentiment-sentirueval2016", trust_remote_code=True)
-    
-    def predict(self, text):
-        result = self.model(text)[0]
-        return result["label"], result["score"]
-
-analyzer = SentimentAnalyzer()
 
 def check_emotion(text):
     posit = [':)', ':d', 'поздрав', 'рождения', 'подар', 'днюхой', '=)']
