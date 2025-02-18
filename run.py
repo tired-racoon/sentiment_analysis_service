@@ -6,13 +6,13 @@ from backend.main import app
 
 # Функция для запуска FastAPI
 def run_fastapi():
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
 
 # Функция для запуска Streamlit
 def run_streamlit():
     # Ждем, пока запустится FastAPI (чтобы избежать ошибок подключения)
     time.sleep(2)  
-    subprocess.run(["streamlit", "run", "frontend/app.py", "--server.port", "8888", "--server.address", "localhost"])
+    subprocess.run(["streamlit", "run", "frontend/app.py"])
 
 # Создаем потоки
 t1 = threading.Thread(target=run_fastapi)
