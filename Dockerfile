@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Клонируем GigaAM и устанавливаем его
 RUN git clone https://github.com/salute-developers/GigaAM.git /app/GigaAM \
-    && pip install -e /app/GigaAM
+    && pip install -e --no-cache-dir/app/GigaAM
 
 # Копируем requirements.txt и устанавливаем зависимости
 COPY requirements.txt .
