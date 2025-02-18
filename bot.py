@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from telebot.types import Message, Voice
 from pydub import AudioSegment
 
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
+TOKEN = "8147302670:AAHoU4dh7VCXg6ENz5LvgbW11vVBdSkLjMQ"
 API_URL = "http://127.0.0.1:8000"  # URL FastAPI
 bot = telebot.TeleBot(TOKEN)
 model_name = "v2_rnnt"
