@@ -65,7 +65,7 @@ async def analyze_file(file: UploadFile = File(...)):
     df["sentiment"] = df["sentiment"].map(LABEL_MAPPING)
     df["emotion_fix"] = df["text"].map(check_emotion)
     df["sentiment"] = df.apply(lambda row: row["emotion_fix"] if row["emotion_fix"] else row["sentiment"], axis=1)
-    result = df[["UserSenderId", "SubmitDate", "MessageText", "sentiment", "confidence"]]
+    result = df[["UserSenderId", "MessageText", "sentiment", "confidence"]]
     return JSONResponse(content=result.to_dict(orient="records"))
 
 client = TestClient(app)
