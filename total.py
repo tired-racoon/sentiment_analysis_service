@@ -77,7 +77,7 @@ async def analyze_file(file: UploadFile = File(...)):
 
     # Создаем колонку с месяцем (год-месяц)
     df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
-    result = df[["UserSenderId", "month", "MessageText", "sentiment", "confidence"]]
+    result = df[["UserSenderId", "month", "SubmitDate", "MessageText", "sentiment", "confidence"]]
     return JSONResponse(content=result.to_dict(orient="records"))
 
 client = TestClient(app)
