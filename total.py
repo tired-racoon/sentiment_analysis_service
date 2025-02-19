@@ -72,12 +72,8 @@ async def analyze_file(file: UploadFile = File(...)):
     df["sentiment"] = df["sentiment"].map(LABEL_MAPPING)
     df["emotion_fix"] = df["text"].map(check_emotion)
     df["sentiment"] = df.apply(lambda row: row["emotion_fix"] if row["emotion_fix"] else row["sentiment"], axis=1)
-    df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
-    df = df.dropna(subset=["SubmitDate"])
 
-    # Создаем колонку с месяцем (год-месяц)
-    df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
-    result = df[["UserSenderId", "month", "SubmitDate", "MessageText", "sentiment", "confidence"]]
+    result = df[["UserSenderId", "MessageText", "sentiment", "confidence"]]
     return JSONResponse(content=result.to_dict(orient="records"))
 
 client = TestClient(app)
@@ -122,40 +118,6 @@ if st.session_state.df is not None:
     if selected_class != "Все классы":
         filtered_df = filtered_df[filtered_df["sentiment"] == selected_class]
     st.write(filtered_df)
-
-    # Преобразуем SubmitDate в datetime, учитывая ISO 8601 формат
-    df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
-
-    # Удаляем строки с NaT (ошибочные даты)
-    df = df.dropna(subset=["SubmitDate"])
-
-    # Создаем колонку с месяцем (год-месяц)
-    df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
-
-    # Группируем по месяцам и тональности
-    df_grouped = df.groupby(["month", "sentiment"]).size().reset_index(name="count")
-
-    # Создаем сводную таблицу для построения отдельных столбцов
-    df_pivot = df_grouped.pivot(index="month", columns="sentiment", values="count").fillna(0)
-
-    # Добавляем общий подсчет сообщений
-    df_pivot["total_messages"] = df_pivot.sum(axis=1)
-
-    # Превращаем индекс в колонку
-    df_pivot.reset_index(inplace=True)
-
-    # Создаем столбчатую диаграмму
-    fig = px.bar(df_pivot, x="month", y=df_pivot.columns[1:-1],  # Исключаем 'month' и 'total_messages'
-             title="Изменение тональности сообщений по месяцам",
-             labels={"value": "Количество сообщений", "variable": "sentiment"},
-             barmode="group")  # Группируем столбцы
-
-    # Добавляем трендовую линию общего количества сообщений
-    fig.add_scatter(x=df_pivot["month"], y=df_pivot["total_messages"], mode="lines+markers",
-                name="Общее количество сообщений", line=dict(color="black"))
-
-    # Отображаем график
-    st.plotly_chart(fig)
 
 
     # Функция для подсчета частоты слов по классам
