@@ -73,7 +73,11 @@ async def analyze_file(file: UploadFile = File(...)):
     df["emotion_fix"] = df["text"].map(check_emotion)
     df["sentiment"] = df.apply(lambda row: row["emotion_fix"] if row["emotion_fix"] else row["sentiment"], axis=1)
     df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
-    result = df[["UserSenderId", "SubmitDate", "MessageText", "sentiment", "confidence"]]
+    df = df.dropna(subset=["SubmitDate"])
+
+    # Создаем колонку с месяцем (год-месяц)
+    df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
+    result = df[["UserSenderId", "month", "MessageText", "sentiment", "confidence"]]
     return JSONResponse(content=result.to_dict(orient="records"))
 
 client = TestClient(app)
@@ -123,10 +127,10 @@ if st.session_state.df is not None:
     # df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
 
     # Удаляем строки с NaT (ошибочные даты)
-    df = df.dropna(subset=["SubmitDate"])
+    # df = df.dropna(subset=["SubmitDate"])
 
-    # Создаем колонку с месяцем (год-месяц)
-    df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
+    # # Создаем колонку с месяцем (год-месяц)
+    # df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
 
     # Группируем по месяцам и тональности
     df_grouped = df.groupby(["month", "sentiment"]).size().reset_index(name="count")
