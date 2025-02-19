@@ -12,6 +12,13 @@ from bs4 import BeautifulSoup
 from starlette.responses import JSONResponse
 from fastapi.testclient import TestClient
 from backend.model import analyzer
+import plotly.express as px
+from wordcloud import WordCloud
+from collections import Counter
+
+STOP_WORDS = {"и", "в", "на", "с", "по", "за", "к", "под", "от", "что", "как", "для", "то", "а", "ли", "будет", "меня", "будет", "пока", "может", "уже", "раз", "мы"
+              "не", "но", "до", "из", "у", "же", "так", "вы", "он", "она", "они", "это", "все", "при", "я", "есть", "днём", "не", "почему", "только", "непример", "нас"
+              "мы", "мне", "мой", "моя", "моё", "мои", "твой", "твоя", "твоё", "твои", "-", "спасибо", "ты", "очень", "ни", "их", "всем", "такие", "их", "или"}
 
 # Запуск FastAPI внутри Streamlit
 app = FastAPI()
@@ -110,3 +117,72 @@ if st.session_state.df is not None:
     if selected_class != "Все классы":
         filtered_df = filtered_df[filtered_df["sentiment"] == selected_class]
     st.write(filtered_df)
+
+    # Преобразуем SubmitDate в datetime, учитывая ISO 8601 формат
+    df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
+
+    # Удаляем строки с NaT (ошибочные даты)
+    df = df.dropna(subset=["SubmitDate"])
+
+    # Создаем колонку с месяцем (год-месяц)
+    df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
+
+    # Группируем по месяцам и тональности
+    df_grouped = df.groupby(["month", "sentiment"]).size().reset_index(name="count")
+
+    # Создаем сводную таблицу для построения отдельных столбцов
+    df_pivot = df_grouped.pivot(index="month", columns="sentiment", values="count").fillna(0)
+
+    # Добавляем общий подсчет сообщений
+    df_pivot["total_messages"] = df_pivot.sum(axis=1)
+
+    # Превращаем индекс в колонку
+    df_pivot.reset_index(inplace=True)
+
+    # Создаем столбчатую диаграмму
+    fig = px.bar(df_pivot, x="month", y=df_pivot.columns[1:-1],  # Исключаем 'month' и 'total_messages'
+             title="Изменение тональности сообщений по месяцам",
+             labels={"value": "Количество сообщений", "variable": "sentiment"},
+             barmode="group")  # Группируем столбцы
+
+    # Добавляем трендовую линию общего количества сообщений
+    fig.add_scatter(x=df_pivot["month"], y=df_pivot["total_messages"], mode="lines+markers",
+                name="Общее количество сообщений", line=dict(color="black"))
+
+    # Отображаем график
+    st.plotly_chart(fig)
+
+
+    # Функция для подсчета частоты слов по классам
+    def get_top_words_by_class(df, top_n=15):
+        word_counts = []
+        
+        for sentiment_class in df["sentiment"].unique():
+            subset = df[df["sentiment"] == sentiment_class]
+        
+            # Объединяем весь текст этого класса и разбиваем на слова
+            words = " ".join(subset["MessageText"]).lower().split()
+
+            # Фильтруем слова, убирая стоп-слова
+            words = [word for word in words if word not in STOP_WORDS]
+
+            word_freq = Counter(words).most_common(top_n)  # ТОП-10 слов
+        
+            for word, count in word_freq:
+                word_counts.append({"word": word, "count": count, "sentiment": sentiment_class})
+    
+        return pd.DataFrame(word_counts)
+
+    # Получаем таблицу с частотой слов
+    word_df = get_top_words_by_class(df)
+
+    # Строим Treemap
+    fig_treemap = px.treemap(word_df, 
+                          path=["sentiment", "word"], 
+                          values="count", 
+                          title="Популярные слова по классам",
+                          color="sentiment", 
+                          color_discrete_map={"positive": "green", "negative": "red", "neutral": "blue"})
+
+    # Отображаем в Streamlit
+    st.plotly_chart(fig_treemap)
