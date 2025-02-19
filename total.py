@@ -126,7 +126,7 @@ if st.session_state.df is not None:
     # Преобразуем SubmitDate в datetime, учитывая ISO 8601 формат
     df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
 
-    Удаляем строки с NaT (ошибочные даты)
+    # Удаляем строки с NaT (ошибочные даты)
     df = df.dropna(subset=["SubmitDate"])
 
     # Создаем колонку с месяцем (год-месяц)
