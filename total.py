@@ -124,13 +124,13 @@ if st.session_state.df is not None:
     st.write(filtered_df)
 
     # Преобразуем SubmitDate в datetime, учитывая ISO 8601 формат
-    # df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
+    df["SubmitDate"] = pd.to_datetime(df["SubmitDate"], errors="coerce")
 
-    # Удаляем строки с NaT (ошибочные даты)
-    # df = df.dropna(subset=["SubmitDate"])
+    Удаляем строки с NaT (ошибочные даты)
+    df = df.dropna(subset=["SubmitDate"])
 
-    # # Создаем колонку с месяцем (год-месяц)
-    # df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
+    # Создаем колонку с месяцем (год-месяц)
+    df["month"] = df["SubmitDate"].dt.to_period("M").astype(str)
 
     # Группируем по месяцам и тональности
     df_grouped = df.groupby(["month", "sentiment"]).size().reset_index(name="count")
